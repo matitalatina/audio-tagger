@@ -1,3 +1,11 @@
 language: go
 go:
   - "1.11.x"
+install:
+  - make install
+build:
+  - make test
+# deploy:
+#   on:
+#     tags: true
+#     branch: master

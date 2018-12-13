@@ -10,6 +10,8 @@ Simple app to change artist and album for audio files in bulk inside a folder.
 - `go get github.com/h2non/filetype` -> FileType check.
 - `go get github.com/stretchr/testify` -> Testing.
 
+Or simply `go get -t -v ./...` to fetch them all.
+
 ### CLI
 
 `go run main.go -folder FOLDER/THAT/STORES/AUDIO/FILES -album "Album Name" -artist "Artist Name"`

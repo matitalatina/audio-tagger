@@ -24,25 +24,36 @@ func main() {
 	}
 
 	filepath.Walk(*folder, func(path string, info os.FileInfo, err error) error {
-
-		if HasAudioExtension(path) {
-			buf, _ := ioutil.ReadFile(path)
-			if filetype.IsAudio(buf) {
-				fmt.Println(path)
-				audioFile, _ := id3.Open(path)
-				defer audioFile.Close()
-
-				if *artist != "" {
-					audioFile.SetArtist(*artist)
-				}
-
-				if *album != "" {
-					audioFile.SetAlbum(*album)
-				}
-			}
+		if err != nil {
+			return err
 		}
-		return nil
+		return doOnlyAudio(path, func() {
+			fmt.Println(path)
+			audioFile, _ := id3.Open(path)
+			defer audioFile.Close()
+
+			if *artist != "" {
+				audioFile.SetArtist(*artist)
+			}
+
+			if *album != "" {
+				audioFile.SetAlbum(*album)
+			}
+		})
 	})
+}
+
+func doOnlyAudio(path string, f func()) error {
+	if HasAudioExtension(path) {
+		buf, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		if filetype.IsAudio(buf) {
+			f()
+		}
+	}
+	return nil
 }
 
 // HasAudioExtension returns true if has audio extension

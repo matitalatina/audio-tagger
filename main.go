@@ -27,7 +27,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	//tagRequest := TagRequest{*album, *artist}
+	tagRequest := TagRequest{*album, *artist}
 
 	filepath.Walk(*folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -37,14 +37,7 @@ func main() {
 			fmt.Println(path)
 			audioFile, _ := id3.Open(path, id3.Options{Parse: true})
 			defer audioFile.Close()
-
-			if *artist != "" {
-				audioFile.SetArtist(*artist)
-			}
-
-			if *album != "" {
-				audioFile.SetAlbum(*album)
-			}
+			setTags(audioFile, tagRequest)
 		})
 	})
 }
@@ -60,6 +53,18 @@ func doOnlyAudio(path string, f func()) error {
 		}
 	}
 	return nil
+}
+
+func setTags(audio *id3.Tag, tagRequest TagRequest) {
+	if tagRequest.artist != "" {
+		audio.SetArtist(tagRequest.artist)
+	}
+
+	if tagRequest.album != "" {
+		audio.SetAlbum(tagRequest.album)
+	}
+
+	audio.Save()
 }
 
 // HasAudioExtension returns true if has audio extension

@@ -7,10 +7,14 @@ import (
 	"os"
 	"path/filepath"
 
-	id3 "github.com/mikkyang/id3-go"
+	id3 "github.com/bogem/id3v2"
 
 	"github.com/h2non/filetype"
 )
+
+type TagRequest struct {
+	album, artist string
+}
 
 func main() {
 	folder := flag.String("folder", "", "[Required] Folder where the audio files are stored")
@@ -23,13 +27,15 @@ func main() {
 		os.Exit(0)
 	}
 
+	//tagRequest := TagRequest{*album, *artist}
+
 	filepath.Walk(*folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		return doOnlyAudio(path, func() {
 			fmt.Println(path)
-			audioFile, _ := id3.Open(path)
+			audioFile, _ := id3.Open(path, id3.Options{Parse: true})
 			defer audioFile.Close()
 
 			if *artist != "" {
